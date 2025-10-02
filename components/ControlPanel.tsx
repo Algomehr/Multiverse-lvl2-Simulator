@@ -70,8 +70,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ constants, setConsta
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        {Object.values(constants).map(c => (
-          <PhysicsSlider key={c.id} constant={c} name={t(`constants.${c.id}`)} onChange={handleSliderChange} />
+        {/* FIX: Changed from Object.values to Object.keys to prevent a type inference issue where the mapped item was incorrectly typed as 'unknown'. */}
+        {Object.keys(constants).map(key => (
+          <PhysicsSlider key={key} constant={constants[key]} name={t(`constants.${key}`)} onChange={handleSliderChange} />
         ))}
       </div>
 

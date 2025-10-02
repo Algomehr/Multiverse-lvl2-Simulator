@@ -85,13 +85,14 @@ ${langInstruction}
 ${LATEX_FORMATTING_INSTRUCTION}
 Constants: ${JSON.stringify(getConstantValues(constants), null, 2)}
 
-Generate a captivating, story-driven report. 
+Generate a captivating, story-driven report. **Structure the entire report using Markdown headings (\`#\`, \`##\`, \`###\`) to create clear, visually separated sections.**
+
 For 'reportMarkdown', include:
-1.  **A creative name for this universe.** (e.g., "The Crystalline Cosmos", "The Crimson Void").
-2.  **A one-paragraph summary** of its key features.
-3.  **An analysis of its potential for life.**
-4.  **A cosmic timeline of major events** (e.g., Big Bang, star formation, potential end state).
-5.  **An image generation prompt** for an artistic depiction of this universe.
+1.  **A creative name for this universe (as a level 1 heading, e.g., \`# The Crimson Void\`).**
+2.  **A one-paragraph summary** of its key features (as a level 2 heading, e.g., \`## Summary\`).
+3.  **An analysis of its potential for life** (as a level 2 heading, e.g., \`## Potential for Life\`).
+4.  **A cosmic timeline of major events** (as a level 2 heading, e.g., \`## Cosmic Timeline\`).
+5.  **An image generation prompt** for an artistic depiction of this universe (as a level 2 heading, e.g., \`## Visualization Prompt\`).
 
 For 'chartData', provide data for:
 -   **radar:** 6 subjects (e.g., Stability, Life Potential, Chemical Complexity, Structural Complexity, Timespan, Energy Level) with values from 0 to 10.
@@ -111,8 +112,9 @@ You are a Multiverse Simulator AI. You will simulate a universe based on a given
 ${langInstruction}
 Constants: ${JSON.stringify(getConstantValues(constants), null, 2)}
 
-Generate a mock scientific research paper.
-For 'reportMarkdown', include the following sections in order:
+Generate a mock scientific research paper. **Structure the entire paper using Markdown headings (\`#\`, \`##\`, \`###\`) to create clear, visually separated sections.** Start with a level 1 heading for the paper's title.
+
+For 'reportMarkdown', include the following sections in order, using level 2 headings for each (e.g., \`## Abstract\`):
 1.  **An abstract** summarizing the universe's properties.
 2.  **Mathematical analysis** of key parameters, using LaTeX for formulas. ${LATEX_FORMATTING_INSTRUCTION}
 3.  **A discussion of the four fundamental forces** and how they've changed.
@@ -121,7 +123,7 @@ For 'reportMarkdown', include the following sections in order:
 6.  **Comparison with the Home Universe:**
     -   Provide a Markdown table comparing key values (Universe Age, Hubble Constant, CMB Temperature, Dark Matter %, Dark Energy %, Baryonic Matter %) with our universe.
     -   Include a "Similarity Index" as a percentage.
-    -   Create a subsection titled "Changes to Key Formulas" explaining how fundamental equations (like Einstein's field equations, Schrödinger equation, E=mc²) are altered by the new constants.
+    -   Create a subsection using a level 3 heading (\`###\`) titled "Changes to Key Formulas" explaining how fundamental equations (like Einstein's field equations, Schrödinger equation, E=mc²) are altered by the new constants.
 7.  **Verifiable Predictions:**
     -   State at least one falsifiable, non-trivial prediction about this universe.
     -   Describe a hypothetical experiment or observation that could be conducted *within this new universe* to prove or disprove the prediction, using mathematical reasoning where applicable.

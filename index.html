@@ -54,6 +54,20 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #6366f1;
       }
+      
+      /* KaTeX rendering adjustment: Show only MathML */
+      .katex .katex-html {
+        display: none;
+      }
+      .katex .katex-mathml {
+        position: static;
+        clip: auto;
+        width: auto;
+        height: auto;
+        border: 0;
+        overflow: visible;
+        white-space: normal;
+      }
     </style>
   <script type="importmap">
 {
