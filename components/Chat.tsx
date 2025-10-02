@@ -1,7 +1,11 @@
-
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
 import { ChatMessage } from '../types';
 import { SendIcon, SparklesIcon } from './icons';
+import { useI18n } from '../i18n';
 
 interface ChatProps {
   chatHistory: ChatMessage[];
@@ -12,6 +16,7 @@ interface ChatProps {
 export const Chat: React.FC<ChatProps> = ({ chatHistory, onSendMessage, isStreaming }) => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,8 +38,18 @@ export const Chat: React.FC<ChatProps> = ({ chatHistory, onSendMessage, isStream
         {chatHistory.map((msg, index) => (
           <div key={index} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {msg.role === 'model' && <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0"><SparklesIcon className="w-5 h-5 text-white" /></div>}
-            <div className={`max-w-md p-3 rounded-lg ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-slate-700 text-gray-300 rounded-bl-none'}`}>
-              <p className="text-sm">{msg.content}</p>
+            <div className={`max-w-lg p-3 rounded-lg ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-be-none' : 'bg-slate-700 text-gray-300 rounded-bl-none'}`}>
+              {msg.role === 'model' ? (
+                <ReactMarkdown
+                  className="prose prose-sm prose-invert prose-p:my-0"
+                  remarkPlugins={[remarkMath, remarkGfm]}
+                  rehypePlugins={[rehypeKatex]}
+                >
+                  {msg.content}
+                </ReactMarkdown>
+              ) : (
+                <p className="text-sm break-words">{msg.content}</p>
+              )}
             </div>
           </div>
         ))}
@@ -60,7 +75,7 @@ export const Chat: React.FC<ChatProps> = ({ chatHistory, onSendMessage, isStream
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question about your universe..."
+            placeholder={t('chatPlaceholder')}
             disabled={isStreaming}
             className="w-full bg-transparent p-3 focus:outline-none"
           />

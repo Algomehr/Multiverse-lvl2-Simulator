@@ -1,4 +1,3 @@
-
 export enum SimulationMode {
   Narrative = "Narrative",
   Researcher = "Researcher",
@@ -6,7 +5,6 @@ export enum SimulationMode {
 
 export interface PhysicalConstant {
   id: string;
-  name: string;
   description: string;
   value: number;
   min: number;
@@ -31,4 +29,20 @@ export interface SimulationReport {
 export interface ChatMessage {
   role: 'user' | 'model';
   content: string;
+}
+
+// New types for the Stellar Evolution Simulator
+export interface StellarStage {
+  name: string;
+  duration: string;
+  temperature: string;
+  description: string;
+  color: string; // Hex color code for visualization
+  relativeSize: number; // A relative size factor for visualization
+}
+
+export interface StellarEvolutionData {
+  initialMass: number;
+  finalFate: string;
+  stages: StellarStage[];
 }

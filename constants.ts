@@ -1,10 +1,8 @@
-
 import { PhysicalConstants } from './types';
 
 export const INITIAL_CONSTANTS: PhysicalConstants = {
   speedOfLight: {
     id: 'speedOfLight',
-    name: "Speed of Light (c)",
     description: "The maximum speed at which all matter and information in the universe can travel.",
     value: 1.0,
     min: 0.1,
@@ -13,7 +11,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   gravitationalConstant: {
     id: 'gravitationalConstant',
-    name: "Gravitational Constant (G)",
     description: "Determines the strength of the gravitational force between objects.",
     value: 1.0,
     min: 0.1,
@@ -22,7 +19,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   planckConstant: {
     id: 'planckConstant',
-    name: "Planck Constant (h)",
     description: "A fundamental constant in quantum mechanics, relating a particle's energy to its frequency.",
     value: 1.0,
     min: 0.1,
@@ -31,7 +27,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   elementaryCharge: {
     id: 'elementaryCharge',
-    name: "Elementary Charge (e)",
     description: "The magnitude of the electric charge carried by a single proton or electron.",
     value: 1.0,
     min: 0.1,
@@ -40,7 +35,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   fineStructureConstant: {
     id: 'fineStructureConstant',
-    name: "Fine-structure Constant (α)",
     description: "Characterizes the strength of the electromagnetic interaction between charged particles.",
     value: 1.0,
     min: 0.1,
@@ -49,7 +43,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   cosmologicalConstant: {
     id: 'cosmologicalConstant',
-    name: "Cosmological Constant (Λ)",
     description: "Represents the energy density of empty space, affecting the expansion of the universe.",
     value: 1.0,
     min: -5.0,
@@ -58,7 +51,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   strongNuclearForce: {
     id: 'strongNuclearForce',
-    name: "Strong Nuclear Force",
     description: "Binds protons and neutrons together to form atomic nuclei.",
     value: 1.0,
     min: 0.1,
@@ -67,7 +59,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   weakNuclearForce: {
     id: 'weakNuclearForce',
-    name: "Weak Nuclear Force",
     description: "Responsible for radioactive decay and nuclear fusion.",
     value: 1.0,
     min: 0.1,
@@ -76,7 +67,6 @@ export const INITIAL_CONSTANTS: PhysicalConstants = {
   },
   higgsFieldStrength: {
     id: 'higgsFieldStrength',
-    name: "Higgs Field Strength",
     description: "Gives mass to elementary particles through the Higgs mechanism.",
     value: 1.0,
     min: 0.1,

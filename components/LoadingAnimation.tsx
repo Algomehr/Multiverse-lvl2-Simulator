@@ -1,18 +1,9 @@
-
 import React from 'react';
-
-const messages = [
-  "Igniting the primeval atom...",
-  "Stretching the fabric of spacetime...",
-  "Cooling the quark-gluon plasma...",
-  "Calibrating fundamental forces...",
-  "Awaiting cosmic inflation...",
-  "Forming the first protons and neutrons...",
-  "Rendering the cosmic microwave background...",
-  "Assembling the first galaxies...",
-];
+import { useI18n } from '../i18n';
 
 export const LoadingAnimation: React.FC = () => {
+    const { t_array } = useI18n();
+    const messages = t_array('loadingMessages');
     const [message, setMessage] = React.useState(messages[0]);
 
     React.useEffect(() => {
@@ -25,7 +16,7 @@ export const LoadingAnimation: React.FC = () => {
         }, 2000);
 
         return () => clearInterval(intervalId);
-    }, []);
+    }, [messages]);
 
 
   return (
