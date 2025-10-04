@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { SimulationMode, PhysicalConstants, ChatMessage, SimulationReport, StellarEvolutionData } from '../types';
+import { SimulationMode, PhysicalConstants, ChatMessage, SimulationReport, StellarEvolutionData, GalaxyFormationData, ChemicalEvolutionData, DynamicTimelineData, StellarEvolutionData3D } from '../types';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set");
@@ -300,5 +300,261 @@ Based on the provided physics, calculate and describe the star's complete evolut
     } catch (e) {
         console.error("Failed to parse stellar evolution response as JSON:", jsonText);
         throw new Error("The stellar simulation returned an invalid format. Please try again.");
+    }
+};
+
+const galaxyFormationSchema = {
+    type: Type.OBJECT,
+    properties: {
+        galaxyType: { type: Type.STRING, enum: ['Spiral', 'Elliptical', 'Irregular'] },
+        description: { type: Type.STRING },
+        starFormationRate: { type: Type.STRING },
+        size: { type: Type.STRING },
+        visualizationParameters: {
+            type: Type.OBJECT,
+            properties: {
+                particleCount: { type: Type.NUMBER },
+                coreColor: { type: Type.STRING },
+                armColor: { type: Type.STRING },
+                spiralTightness: { type: Type.NUMBER },
+                coreSize: { type: Type.NUMBER },
+                armCount: { type: Type.NUMBER },
+                ellipticity: { type: Type.NUMBER },
+            }
+        }
+    }
+};
+
+export const simulateGalaxyFormation = async (constants: PhysicalConstants, language: 'en' | 'fa'): Promise<GalaxyFormationData> => {
+    const langInstruction = language === 'fa'
+        ? "**مهم: کل پاسخ شما (شامل تمام رشته‌های متنی) باید به زبان فارسی باشد.**"
+        : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
+
+    const prompt = `
+You are an expert cosmologist AI simulating galaxy formation in a custom universe.
+This universe is defined by the following physical constants (as multipliers of real-world values):
+${JSON.stringify(getConstantValues(constants), null, 2)}
+
+Based on these physics:
+1.  **Determine the most likely type of galaxy to form.** (e.g., Spiral, Elliptical, Irregular). A stronger gravity might lead to more compact elliptical galaxies, while a different cosmological constant could affect disk stability for spirals.
+2.  **Write a brief, scientifically-grounded description** of how such a galaxy would form and what its main characteristics would be.
+3.  **Estimate its star formation rate and typical size.**
+4.  **Provide a set of \`visualizationParameters\` for a canvas animation.** These parameters should *reflect the physics*. For example:
+    -   A high gravitational constant might result in a larger \`coreSize\` and tighter spirals (\`spiralTightness\`).
+    -   An irregular galaxy should have an \`armCount\` of 0 and higher \`ellipticity\`.
+    -   An elliptical galaxy should have an \`armCount\` of 0, a large \`coreSize\`, and some \`ellipticity\`.
+    -   Choose colors that represent the typical star population (e.g., yellowish core for older stars, bluish arms for younger stars).
+    -   \`ellipticity\` should be between 0 (perfectly circular) and 0.8 (very elongated).
+    -   \`coreSize\` should be a ratio between 0 and 1.
+    -   \`spiralTightness\` should be between 0.1 (loose) and 2.0 (tight).
+- ${langInstruction}
+`;
+
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: galaxyFormationSchema,
+        },
+    });
+
+    const jsonText = response.text.trim();
+    try {
+        return JSON.parse(jsonText) as GalaxyFormationData;
+    } catch (e) {
+        console.error("Failed to parse galaxy formation response as JSON:", jsonText);
+        throw new Error("The galaxy simulation returned an invalid format. Please try again.");
+    }
+};
+
+const chemicalEvolutionSchema = {
+    type: Type.OBJECT,
+    properties: {
+        report: { type: Type.STRING },
+        elements: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    atomicNumber: { type: Type.NUMBER },
+                    symbol: { type: Type.STRING },
+                    name: { type: Type.STRING },
+                    atomicMass: { type: Type.NUMBER },
+                    isStable: { type: Type.BOOLEAN },
+                    description: { type: Type.STRING },
+                }
+            }
+        }
+    }
+};
+
+export const simulateChemicalEvolution = async (constants: PhysicalConstants, language: 'en' | 'fa'): Promise<ChemicalEvolutionData> => {
+    const langInstruction = language === 'fa'
+        ? "**مهم: کل پاسخ شما (شامل تمام رشته‌های متنی) باید به زبان فارسی باشد.**"
+        : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
+
+    const prompt = `
+You are an expert nuclear physicist and chemist AI operating within a custom universe.
+This universe is defined by the following physical constants (as multipliers of real-world values):
+${JSON.stringify(getConstantValues(constants), null, 2)}
+
+Based on these physics, analyze the chemical evolution of this universe.
+1.  **Write a report** explaining how these constants, especially the Strong and Weak Nuclear Forces, affect Big Bang Nucleosynthesis and stellar nucleosynthesis. Discuss the resulting chemical landscape, common molecules, and overall complexity.
+2.  **Generate a unique Periodic Table for the first 36 elements.** For each element:
+    -   Provide its atomic number, a plausible symbol, and a name.
+    -   Estimate its atomic mass.
+    -   **CRUCIAL:** Determine if the element is stable (\`isStable: true\`) or if all its isotopes are radioactive (\`isStable: false\`). This is the most important calculation. A stronger Strong Force might make larger nuclei stable, while a weaker one might make even helium unstable.
+    -   Provide a brief description of the element's significance or properties in this universe.
+- ${langInstruction}
+`;
+
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: chemicalEvolutionSchema,
+        },
+    });
+
+    const jsonText = response.text.trim();
+    try {
+        return JSON.parse(jsonText) as ChemicalEvolutionData;
+    } catch (e) {
+        console.error("Failed to parse chemical evolution response as JSON:", jsonText);
+        throw new Error("The chemical evolution simulation returned an invalid format. Please try again.");
+    }
+};
+
+const dynamicTimelineSchema = {
+    type: Type.OBJECT,
+    properties: {
+        summary: { type: Type.STRING },
+        epochs: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    name: { type: Type.STRING },
+                    timeRange: { type: Type.STRING },
+                    description: { type: Type.STRING },
+                    temperature: { type: Type.STRING },
+                    universeSize: { type: Type.STRING },
+                    dominantProcess: { type: Type.STRING },
+                }
+            }
+        }
+    }
+};
+
+export const simulateDynamicTimeline = async (constants: PhysicalConstants, language: 'en' | 'fa'): Promise<DynamicTimelineData> => {
+    const langInstruction = language === 'fa'
+        ? "**مهم: کل پاسخ شما (شامل تمام رشته‌های متنی) باید به زبان فارسی باشد.**"
+        : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
+
+    const prompt = `
+You are an expert cosmologist AI, simulating the entire history of a custom universe.
+This universe is defined by the following physical constants (as multipliers of real-world values):
+${JSON.stringify(getConstantValues(constants), null, 2)}
+
+Based on these physics, generate a dynamic timeline of the universe's history.
+1.  **Write a brief summary** of the universe's overall lifespan and key phases.
+2.  **Generate a series of distinct epochs (at least 6-8).** For each epoch, provide:
+    -   A descriptive \`name\` (e.g., "Inflationary Epoch", "Stelliferous Era", "Heat Death").
+    -   The \`timeRange\` for the epoch (e.g., "10^-36s to 10^-32s", "1 billion to 100 trillion years").
+    -   A concise \`description\` of the key events and physical conditions.
+    -   The average \`temperature\` of the universe.
+    -   The relative \`universeSize\` (can be descriptive, e.g., "Microscopic", "Galactic scales", "Vastly expanded").
+    -   The \`dominantProcess\` occurring during that time (e.g., "Quantum Fluctuations", "Nucleosynthesis", "Star Formation", "Galaxy Mergers", "Proton Decay").
+- ${langInstruction}
+`;
+
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: dynamicTimelineSchema,
+        },
+    });
+
+    const jsonText = response.text.trim();
+    try {
+        return JSON.parse(jsonText) as DynamicTimelineData;
+    } catch (e) {
+        console.error("Failed to parse dynamic timeline response as JSON:", jsonText);
+        throw new Error("The dynamic timeline simulation returned an invalid format. Please try again.");
+    }
+};
+
+
+const stellarEvolution3DSchema = {
+    type: Type.OBJECT,
+    properties: {
+        initialMass: { type: Type.NUMBER },
+        finalFate: { type: Type.STRING },
+        stages: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    name: { type: Type.STRING },
+                    duration: { type: Type.STRING },
+                    temperature: { type: Type.STRING },
+                    description: { type: Type.STRING },
+                    color: { type: Type.STRING },
+                    relativeSize: { type: Type.NUMBER },
+                    emissivity: { type: Type.NUMBER },
+                    surfaceTexture: { type: Type.STRING, enum: ['smooth', 'turbulent', 'crystalline', 'nebular', 'blackhole'] },
+                    coronaColor: { type: Type.STRING },
+                    coronaSize: { type: Type.NUMBER },
+                }
+            }
+        }
+    }
+};
+
+export const simulateStellarEvolution3D = async (constants: PhysicalConstants, starMass: number, language: 'en' | 'fa'): Promise<StellarEvolutionData3D> => {
+    const langInstruction = language === 'fa' 
+        ? "**مهم: کل پاسخ شما (شامل تمام رشته‌های متنی) باید به زبان فارسی باشد.**"
+        : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
+
+    const prompt = `
+You are an expert astrophysicist AI creating a 3D visualization of stellar evolution in a custom universe.
+This universe is defined by the following physical constants (as multipliers of real-world values):
+${JSON.stringify(getConstantValues(constants), null, 2)}
+
+A user wants to simulate the lifecycle of a star with an initial mass of **${starMass} solar masses**.
+Based on the provided physics, calculate and describe the star's complete evolutionary path, providing specific parameters for a pseudo-3D canvas visualization.
+
+- Generate at least 5-7 scientifically plausible stages, including the initial nebular cloud and the final remnant.
+- For each stage, provide:
+    - \`name\`, \`duration\`, \`temperature\`, and \`description\`.
+    - \`color\`: A HEX color for the star's main body.
+    - \`relativeSize\`: A size factor (Main Sequence star = 1).
+    - \`emissivity\`: A brightness/glow factor from 0.0 (dim) to 1.0 (very bright).
+    - \`surfaceTexture\`: Choose one: 'nebular' (for protostars), 'smooth' (stable stars), 'turbulent' (giants, unstable stars), 'crystalline' (white dwarfs), 'blackhole'.
+    - \`coronaColor\`: A HEX color for the outer glow/corona.
+    - \`coronaSize\`: A relative size factor for the corona (0 for none, up to 10 for large nebulae).
+- If the final fate is a black hole, set size and emissivity to 0, color to '#000000', and texture to 'blackhole'. Add a corona to represent an accretion disk.
+- ${langInstruction}
+`;
+
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: stellarEvolution3DSchema,
+        },
+    });
+
+    const jsonText = response.text.trim();
+    try {
+        return JSON.parse(jsonText) as StellarEvolutionData3D;
+    } catch (e) {
+        console.error("Failed to parse 3D stellar evolution response as JSON:", jsonText);
+        throw new Error("The 3D stellar simulation returned an invalid format. Please try again.");
     }
 };

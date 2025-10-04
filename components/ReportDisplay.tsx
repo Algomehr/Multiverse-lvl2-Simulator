@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -10,6 +10,10 @@ import { ExpansionHistoryChart } from './charts/ExpansionHistoryChart';
 import { NuclearStabilityChart } from './charts/NuclearStabilityChart';
 import { Chat } from './Chat';
 import { StellarEvolutionSimulator } from './StellarEvolutionSimulator';
+import { GalaxyFormationSimulator } from './GalaxyFormationSimulator';
+import { ChemicalEvolutionSimulator } from './ChemicalEvolutionSimulator';
+import { DynamicTimelineSimulator } from './DynamicTimelineSimulator';
+import { StellarEvolutionSimulator3D } from './StellarEvolutionSimulator3D';
 import { useI18n } from '../i18n';
 
 interface ReportDisplayProps {
@@ -43,7 +47,13 @@ export const ReportDisplay: React.FC<ReportDisplayProps> = ({ report, chatHistor
       </div>
 
       {mode === SimulationMode.Researcher && (
-        <StellarEvolutionSimulator constants={constants} />
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <StellarEvolutionSimulator constants={constants} />
+            <GalaxyFormationSimulator constants={constants} />
+            <ChemicalEvolutionSimulator constants={constants} />
+            <DynamicTimelineSimulator constants={constants} />
+            <StellarEvolutionSimulator3D constants={constants} />
+         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
