@@ -150,10 +150,17 @@ export const generateUniverseReport = async (mode: SimulationMode, constants: Ph
 
   const jsonText = response.text.trim();
   try {
-    return JSON.parse(jsonText) as SimulationReport;
+    const parsed = JSON.parse(jsonText) as SimulationReport;
+    // Validate the structure to prevent rendering errors
+    if (!parsed.reportMarkdown || !parsed.chartData?.radar || !parsed.chartData?.composition || !parsed.chartData?.expansion || !parsed.chartData?.stability) {
+        throw new Error("The simulation returned an incomplete data structure. Critical fields for the main report are missing.");
+    }
+    return parsed;
   } catch (e) {
-    console.error("Failed to parse Gemini response as JSON:", jsonText);
-    throw new Error("The simulation returned an invalid format. Please try again.");
+    console.error("Failed to parse or validate Gemini response as JSON:", jsonText, e);
+    // Forward the specific validation error or a generic parsing error
+    const message = e instanceof Error ? e.message : "The simulation returned an invalid format. Please try again.";
+    throw new Error(message);
   }
 };
 
@@ -296,10 +303,15 @@ Based on the provided physics, calculate and describe the star's complete evolut
 
     const jsonText = response.text.trim();
     try {
-        return JSON.parse(jsonText) as StellarEvolutionData;
+        const parsed = JSON.parse(jsonText) as StellarEvolutionData;
+        if (!parsed.stages || !Array.isArray(parsed.stages)) {
+            throw new Error("The stellar simulation returned data without the required 'stages' array.");
+        }
+        return parsed;
     } catch (e) {
-        console.error("Failed to parse stellar evolution response as JSON:", jsonText);
-        throw new Error("The stellar simulation returned an invalid format. Please try again.");
+        console.error("Failed to parse or validate stellar evolution response as JSON:", jsonText, e);
+        const message = e instanceof Error ? e.message : "The stellar simulation returned an invalid format. Please try again.";
+        throw new Error(message);
     }
 };
 
@@ -316,6 +328,8 @@ const galaxyFormationSchema = {
                 particleCount: { type: Type.NUMBER },
                 coreColor: { type: Type.STRING },
                 armColor: { type: Type.STRING },
+                dustColor: { type: Type.STRING },
+                colorDispersion: { type: Type.NUMBER },
                 spiralTightness: { type: Type.NUMBER },
                 coreSize: { type: Type.NUMBER },
                 armCount: { type: Type.NUMBER },
@@ -336,17 +350,19 @@ This universe is defined by the following physical constants (as multipliers of 
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 
 Based on these physics:
-1.  **Determine the most likely type of galaxy to form.** (e.g., Spiral, Elliptical, Irregular). A stronger gravity might lead to more compact elliptical galaxies, while a different cosmological constant could affect disk stability for spirals.
-2.  **Write a brief, scientifically-grounded description** of how such a galaxy would form and what its main characteristics would be.
+1.  **Determine the most likely type of galaxy to form.** (e.g., Spiral, Elliptical, Irregular).
+2.  **Write a brief, scientifically-grounded description** of how such a galaxy would form.
 3.  **Estimate its star formation rate and typical size.**
-4.  **Provide a set of \`visualizationParameters\` for a canvas animation.** These parameters should *reflect the physics*. For example:
-    -   A high gravitational constant might result in a larger \`coreSize\` and tighter spirals (\`spiralTightness\`).
-    -   An irregular galaxy should have an \`armCount\` of 0 and higher \`ellipticity\`.
-    -   An elliptical galaxy should have an \`armCount\` of 0, a large \`coreSize\`, and some \`ellipticity\`.
-    -   Choose colors that represent the typical star population (e.g., yellowish core for older stars, bluish arms for younger stars).
-    -   \`ellipticity\` should be between 0 (perfectly circular) and 0.8 (very elongated).
-    -   \`coreSize\` should be a ratio between 0 and 1.
-    -   \`spiralTightness\` should be between 0.1 (loose) and 2.0 (tight).
+4.  **Provide a set of \`visualizationParameters\` for a realistic canvas animation.** These parameters must reflect the physics.
+    -   \`particleCount\`: Choose a reasonable number like 20000.
+    -   \`coreColor\`: Hex code for the central bulge (typically older, yellower stars, e.g., '#FFDDBB').
+    -   \`armColor\`: Hex code for the disk/arms (typically younger, bluer stars, e.g., '#AABBFF'). For Elliptical galaxies, this should be very similar to \`coreColor\`.
+    -   \`dustColor\`: Hex code for dust lanes (a dark, reddish-brown, e.g., '#4D2C1F'). Set to '#000000' for non-spiral galaxies.
+    -   \`colorDispersion\`: A value from 0.0 to 1.0. Higher values (e.g., 0.5) for Irregular galaxies to show mixed star populations. Lower (e.g., 0.1) for stable Spiral/Elliptical galaxies.
+    -   \`coreSize\`: Ratio from 0 to 1. Higher for Elliptical, lower for Spiral.
+    -   \`ellipticity\`: Ratio from 0 (circular) to 0.8 (elongated). Higher for Elliptical galaxies.
+    -   \`armCount\`: Number of spiral arms. Set to 0 for Elliptical and Irregular.
+    -   \`spiralTightness\`: From 0.1 (loose) to 2.0 (tight). A high gravitational constant might lead to tighter spirals.
 - ${langInstruction}
 `;
 
@@ -361,10 +377,15 @@ Based on these physics:
 
     const jsonText = response.text.trim();
     try {
-        return JSON.parse(jsonText) as GalaxyFormationData;
+        const parsed = JSON.parse(jsonText) as GalaxyFormationData;
+        if (!parsed.visualizationParameters) {
+            throw new Error("The galaxy simulation returned data without the required 'visualizationParameters' object.");
+        }
+        return parsed;
     } catch (e) {
-        console.error("Failed to parse galaxy formation response as JSON:", jsonText);
-        throw new Error("The galaxy simulation returned an invalid format. Please try again.");
+        console.error("Failed to parse or validate galaxy formation response as JSON:", jsonText, e);
+        const message = e instanceof Error ? e.message : "The galaxy simulation returned an invalid format. Please try again.";
+        throw new Error(message);
     }
 };
 
@@ -420,10 +441,15 @@ Based on these physics, analyze the chemical evolution of this universe.
 
     const jsonText = response.text.trim();
     try {
-        return JSON.parse(jsonText) as ChemicalEvolutionData;
+        const parsed = JSON.parse(jsonText) as ChemicalEvolutionData;
+        if (!parsed.elements || !Array.isArray(parsed.elements)) {
+            throw new Error("The chemical evolution simulation returned data without the required 'elements' array.");
+        }
+        return parsed;
     } catch (e) {
-        console.error("Failed to parse chemical evolution response as JSON:", jsonText);
-        throw new Error("The chemical evolution simulation returned an invalid format. Please try again.");
+        console.error("Failed to parse or validate chemical evolution response as JSON:", jsonText, e);
+        const message = e instanceof Error ? e.message : "The chemical evolution simulation returned an invalid format. Please try again.";
+        throw new Error(message);
     }
 };
 
@@ -481,10 +507,15 @@ Based on these physics, generate a dynamic timeline of the universe's history.
 
     const jsonText = response.text.trim();
     try {
-        return JSON.parse(jsonText) as DynamicTimelineData;
+        const parsed = JSON.parse(jsonText) as DynamicTimelineData;
+        if (!parsed.epochs || !Array.isArray(parsed.epochs) || parsed.epochs.length === 0) {
+            throw new Error("The dynamic timeline simulation returned data without any 'epochs'.");
+        }
+        return parsed;
     } catch (e) {
-        console.error("Failed to parse dynamic timeline response as JSON:", jsonText);
-        throw new Error("The dynamic timeline simulation returned an invalid format. Please try again.");
+        console.error("Failed to parse or validate dynamic timeline response as JSON:", jsonText, e);
+        const message = e instanceof Error ? e.message : "The dynamic timeline simulation returned an invalid format. Please try again.";
+        throw new Error(message);
     }
 };
 
@@ -531,11 +562,11 @@ Based on the provided physics, calculate and describe the star's complete evolut
 - Generate at least 5-7 scientifically plausible stages, including the initial nebular cloud and the final remnant.
 - For each stage, provide:
     - \`name\`, \`duration\`, \`temperature\`, and \`description\`.
-    - \`color\`: A HEX color for the star's main body.
+    - \`color\`: A HEX color for the star's main body (CRITICAL: must be a 7-character string, e.g., '#FFFFFF').
     - \`relativeSize\`: A size factor (Main Sequence star = 1).
     - \`emissivity\`: A brightness/glow factor from 0.0 (dim) to 1.0 (very bright).
     - \`surfaceTexture\`: Choose one: 'nebular' (for protostars), 'smooth' (stable stars), 'turbulent' (giants, unstable stars), 'crystalline' (white dwarfs), 'blackhole'.
-    - \`coronaColor\`: A HEX color for the outer glow/corona.
+    - \`coronaColor\`: A HEX color for the outer glow/corona (CRITICAL: must be a 7-character string, e.g., '#87CEEB').
     - \`coronaSize\`: A relative size factor for the corona (0 for none, up to 10 for large nebulae).
 - If the final fate is a black hole, set size and emissivity to 0, color to '#000000', and texture to 'blackhole'. Add a corona to represent an accretion disk.
 - ${langInstruction}
@@ -552,9 +583,14 @@ Based on the provided physics, calculate and describe the star's complete evolut
 
     const jsonText = response.text.trim();
     try {
-        return JSON.parse(jsonText) as StellarEvolutionData3D;
+        const parsed = JSON.parse(jsonText) as StellarEvolutionData3D;
+        if (!parsed.stages || !Array.isArray(parsed.stages) || parsed.stages.length === 0) {
+            throw new Error("The 3D stellar simulation returned data without any 'stages'.");
+        }
+        return parsed;
     } catch (e) {
-        console.error("Failed to parse 3D stellar evolution response as JSON:", jsonText);
-        throw new Error("The 3D stellar simulation returned an invalid format. Please try again.");
+        console.error("Failed to parse or validate 3D stellar evolution response as JSON:", jsonText, e);
+        const message = e instanceof Error ? e.message : "The 3D stellar simulation returned an invalid format. Please try again.";
+        throw new Error(message);
     }
 };

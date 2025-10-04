@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
 import { PhysicalConstants, ChemicalEvolutionData } from '../types';
 import { simulateChemicalEvolution } from '../services/geminiService';
 import { useI18n } from '../i18n';
@@ -66,7 +70,15 @@ export const ChemicalEvolutionSimulator: React.FC<ChemicalEvolutionSimulatorProp
             <div className="space-y-6">
                 <div>
                     <h4 className="text-xl font-bold text-indigo-300 mb-2">{t('chemicalEvolution.reportTitle')}</h4>
-                    <p className="text-slate-300 bg-slate-800/50 p-4 rounded-lg text-sm">{evolutionData.report}</p>
+                    <div className="text-slate-300 bg-slate-800/50 p-4 rounded-lg text-sm">
+                       <ReactMarkdown
+                         className="prose prose-sm prose-invert prose-p:my-2"
+                         remarkPlugins={[remarkMath, remarkGfm]}
+                         rehypePlugins={[rehypeKatex]}
+                       >
+                         {evolutionData.report}
+                       </ReactMarkdown>
+                    </div>
                 </div>
                  <div>
                     <h4 className="text-xl font-bold text-indigo-300 mb-2">{t('chemicalEvolution.periodicTableTitle')}</h4>

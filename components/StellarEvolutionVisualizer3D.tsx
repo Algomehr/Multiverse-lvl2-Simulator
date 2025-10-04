@@ -2,22 +2,52 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { StellarEvolutionData3D, StellarStage3D } from '../types';
 import { useI18n } from '../i18n';
 
-interface StellarEvolutionVisualizer3DProps {
-  data: StellarEvolutionData3D;
-}
+// Robust color parsing utility
+const parseColor = (colorStr: string | undefined): { r: number; g: number; b: number } => {
+  const fallback = { r: 255, g: 255, b: 255 }; // Default to white
+  if (typeof colorStr !== 'string' || !colorStr.startsWith('#')) {
+    return fallback;
+  }
+
+  let hex = colorStr.slice(1);
+
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+
+  if (hex.length !== 6) {
+    return fallback;
+  }
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+    return fallback;
+  }
+
+  return { r, g, b };
+};
+
 
 // Utility for linear interpolation
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-// Utility to interpolate between two hex colors
+// Utility to interpolate between two hex colors using the robust parser
 const lerpColor = (color1: string, color2: string, t: number) => {
-    const from = { r: parseInt(color1.slice(1,3), 16), g: parseInt(color1.slice(3,5), 16), b: parseInt(color1.slice(5,7), 16) };
-    const to = { r: parseInt(color2.slice(1,3), 16), g: parseInt(color2.slice(3,5), 16), b: parseInt(color2.slice(5,7), 16) };
+    const from = parseColor(color1);
+    const to = parseColor(color2);
     const r = Math.round(lerp(from.r, to.r, t));
     const g = Math.round(lerp(from.g, to.g, t));
     const b = Math.round(lerp(from.b, to.b, t));
     return `rgb(${r},${g},${b})`;
 };
+
+// FIX: Added interface definition for component props.
+interface StellarEvolutionVisualizer3DProps {
+  data: StellarEvolutionData3D;
+}
 
 export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3DProps> = ({ data }) => {
   const { t } = useI18n();
@@ -56,14 +86,14 @@ export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3D
     const fromStage = data.stages[lastStageIndex.current];
     const toStage = data.stages[stageIndex];
     
-    // Interpolate properties
+    // Interpolate properties with fallbacks for safety
     const t = transitionProgress.current;
-    const currentSize = lerp(fromStage.relativeSize, toStage.relativeSize, t);
-    const currentCoronaSize = lerp(fromStage.coronaSize, toStage.coronaSize, t);
-    const currentEmissivity = lerp(fromStage.emissivity, toStage.emissivity, t);
-    const currentColor = lerpColor(fromStage.color, toStage.color, t);
-    const currentCoronaColor = lerpColor(fromStage.coronaColor, toStage.coronaColor, t);
-    const currentTexture = t < 0.5 ? fromStage.surfaceTexture : toStage.surfaceTexture;
+    const currentSize = lerp(fromStage?.relativeSize ?? 1, toStage?.relativeSize ?? 1, t);
+    const currentCoronaSize = lerp(fromStage?.coronaSize ?? 0, toStage?.coronaSize ?? 0, t);
+    const currentEmissivity = lerp(fromStage?.emissivity ?? 0, toStage?.emissivity ?? 0, t);
+    const currentColor = lerpColor(fromStage?.color ?? '#FFFFFF', toStage?.color ?? '#FFFFFF', t);
+    const currentCoronaColor = lerpColor(fromStage?.coronaColor ?? '#FFFFFF', toStage?.coronaColor ?? '#FFFFFF', t);
+    const currentTexture = t < 0.5 ? (fromStage?.surfaceTexture ?? 'smooth') : (toStage?.surfaceTexture ?? 'smooth');
 
 
     // --- Drawing ---
@@ -164,7 +194,7 @@ export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3D
       <canvas ref={canvasRef} className="w-full h-80 rounded-lg bg-black" />
       <div className="bg-slate-800/50 p-4 rounded-lg space-y-4">
          <div>
-            <label htmlFor="stage-slider" className="text-lg font-semibold text-indigo-300 mb-2 block">{t('stellarEvolution3D.stageControls')}: <span className="text-white font-bold">{currentStage.name}</span></label>
+            <label htmlFor="stage-slider" className="text-lg font-semibold text-indigo-300 mb-2 block">{t('stellarEvolution3D.stageControls')}: <span className="text-white font-bold">{currentStage?.name ?? 'Loading...'}</span></label>
             <input
                 id="stage-slider"
                 type="range"
@@ -175,12 +205,12 @@ export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3D
                 className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer range-lg accent-indigo-500"
             />
             <div className="flex justify-between text-xs text-slate-400 mt-1 px-1">
-                <span>{data.stages[0].name}</span>
-                <span>{data.stages[data.stages.length - 1].name}</span>
+                <span>{data.stages[0]?.name ?? ''}</span>
+                <span>{data.stages[data.stages.length - 1]?.name ?? ''}</span>
             </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-slate-900/50 p-3 rounded-lg">
+        {currentStage && <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-slate-900/50 p-3 rounded-lg">
            <div>
              <p className="font-semibold text-indigo-300">{t('stellarEvolution3D.duration')}</p>
              <p className="text-slate-200">{currentStage.duration}</p>
@@ -193,7 +223,7 @@ export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3D
              <p className="font-semibold text-indigo-300">Description</p>
              <p className="text-slate-300">{currentStage.description}</p>
            </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

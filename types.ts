@@ -54,6 +54,8 @@ export interface GalaxyVisualizationParameters {
   particleCount: number;
   coreColor: string;
   armColor: string;
+  dustColor: string; // Color for dust lanes, e.g., a dark reddish-brown
+  colorDispersion: number; // Factor from 0 to 1 for how much particle colors should vary
   spiralTightness: number;
   coreSize: number;
   armCount: number;
