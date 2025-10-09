@@ -108,31 +108,53 @@ const researcherPrompt = (constants: PhysicalConstants, language: 'en' | 'fa') =
         : "**IMPORTANT: Your entire response (including `reportMarkdown` and subjects/names in `chartData`) must be in English.**";
 
     return `
-You are a Multiverse Simulator AI. You will simulate a universe based on a given set of physical constants, which are provided as multipliers of their real-world values. The user has selected 'Researcher' mode. Your response must be scientifically rigorous and based on established physical principles, adapted for the given constants.
+You are a Multiverse Simulator AI. You will simulate a universe based on a given set of physical constants, which are provided as multipliers of their real-world values. The user has selected 'Researcher' mode. Your response **must be extremely detailed, scientifically rigorous, and structured like a formal research paper**, based on established physical principles adapted for the given constants.
 ${langInstruction}
 Constants: ${JSON.stringify(getConstantValues(constants), null, 2)}
 
 Generate a mock scientific research paper. **Structure the entire paper using Markdown headings (\`#\`, \`##\`, \`###\`) to create clear, visually separated sections.** Start with a level 1 heading for the paper's title.
 
 For 'reportMarkdown', include the following sections in order, using level 2 headings for each (e.g., \`## Abstract\`):
-1.  **An abstract** summarizing the universe's properties.
-2.  **Mathematical analysis** of key parameters, using LaTeX for formulas. ${LATEX_FORMATTING_INSTRUCTION}
-3.  **A discussion of the four fundamental forces** and how they've changed.
-4.  **The resulting particle spectrum.**
-5.  **Cosmological parameters** (e.g., Hubble parameter, density parameters).
-6.  **Comparison with the Home Universe:**
-    -   Provide a Markdown table comparing key values (Universe Age, Hubble Constant, CMB Temperature, Dark Matter %, Dark Energy %, Baryonic Matter %) with our universe.
-    -   Include a "Similarity Index" as a percentage.
-    -   Create a subsection using a level 3 heading (\`###\`) titled "Changes to Key Formulas" explaining how fundamental equations (like Einstein's field equations, Schrödinger equation, E=mc²) are altered by the new constants.
-7.  **Verifiable Predictions:**
-    -   State at least one falsifiable, non-trivial prediction about this universe.
-    -   Describe a hypothetical experiment or observation that could be conducted *within this new universe* to prove or disprove the prediction, using mathematical reasoning where applicable.
+
+1.  **Abstract**: A concise summary of the universe's most critical physical properties and its overall nature.
+
+2.  **Key Physical Parameters**:
+    *   **### Fundamental Constants**: Briefly list the input constant multipliers in a Markdown table for reference.
+    *   **### Derived Dimensionless Constants**: Calculate and discuss at least two critical dimensionless constants that emerge from the inputs (e.g., gravitational coupling constant, proton-to-electron mass ratio, etc.). Explain their profound implications for the universe's structure. ${LATEX_FORMATTING_INSTRUCTION}
+
+3.  **Analysis of Fundamental Forces**: Provide a detailed breakdown for each of the four forces. For each force (Gravity, Electromagnetism, Strong Nuclear, Weak Nuclear), create a subsection (\`###\`) and analyze its:
+    *   **Relative Strength**: How does its strength compare to the other forces in this universe?
+    *   **Range**: What is its effective range?
+    *   **Key Consequences**: Describe 2-3 specific, major consequences of its modified properties (e.g., "A stronger weak force leads to rapid stellar fusion and drastically shorter star lifespans.").
+
+4.  **Particle Physics: A New Standard Model**:
+    *   Provide a summary of the particle landscape.
+    *   **### Fermions**: Present Markdown tables for Quarks and Leptons, outlining their generations, charges, and predicted relative masses.
+    *   **### Bosons**: List the force-carrying bosons and the Higgs boson, explaining their roles and any changes to their properties.
+
+5.  **Cosmology and Structure Formation**:
+    *   List key cosmological parameters (e.g., Hubble parameter, Omega values for matter/energy).
+    *   Discuss the timeline of major cosmic events (e.g., Inflation, Recombination, First Stars), noting how they differ from our universe.
+    *   Analyze the prospects for large-scale structure formation. Are galaxies larger/smaller, more/less dense?
+
+6.  **Stellar Astrophysics and Chemistry**:
+    *   **### Stellar Characteristics**: Describe the nature of typical stars (e.g., size, lifespan, color, fusion processes).
+    *   **### Nucleosynthesis and Chemistry**: Discuss the outcomes of Big Bang and stellar nucleosynthesis. What is the heaviest stable element? Is complex chemistry and the formation of long-chain molecules likely?
+
+7.  **Comparison with the Home Universe**:
+    *   Provide a Markdown table comparing key values (Universe Age, Hubble Constant, CMB Temperature, Dark Matter %, Dark Energy %, Baryonic Matter %) with our universe.
+    *   Include a "Similarity Index" as a percentage.
+    *   Under a \`### Changes to Key Formulas\` subsection, explain in detail how fundamental equations (like Einstein's field equations, Schrödinger equation, E=mc²) are altered or reinterpreted in this new physical context.
+
+8.  **Falsifiable Predictions**:
+    *   State **two** distinct, non-trivial, and falsifiable predictions about this universe.
+    *   For each, describe a hypothetical experiment or observation that could be conducted *within this new universe* to prove or disprove the prediction.
 
 For 'chartData', provide data for:
--   **radar:** 6 subjects (e.g., Stability, Predictability, Mathematical Elegance, Complexity, Timespan, Energy Level) with values from 0 to 10.
--   **composition:** Percentages for Dark Energy, Dark Matter, and Baryonic Matter. Must sum to 100.
--   **expansion:** A line chart with at least 5 data points showing the universe's size over time.
--   **stability:** A scatter plot of 50-100 points representing stable atomic nuclei (x=protons, y=neutrons, z=binding energy).
+-   **radar**: 6 subjects (e.g., Stability, Predictability, Mathematical Elegance, Complexity, Timespan, Energy Level) with values from 0 to 10.
+-   **composition**: Percentages for Dark Energy, Dark Matter, and Baryonic Matter. Must sum to 100.
+-   **expansion**: A line chart with at least 5 data points showing the universe's size over time.
+-   **stability**: A scatter plot of 50-100 points representing stable atomic nuclei (x=protons, y=neutrons, z=binding energy).
 `;
 }
 
@@ -417,7 +439,7 @@ export const simulateChemicalEvolution = async (constants: PhysicalConstants, la
 
     const prompt = `
 You are an expert nuclear physicist and chemist AI operating within a custom universe. Your response must be scientifically rigorous.
-This universe is defined by the following physical constants (as multipliers of their real-world values):
+This universe is defined by the following physical constants (as multipliers of real-world values):
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 
 Based on these physics, analyze the chemical evolution of this universe.
@@ -535,7 +557,7 @@ export const simulateQuantumFluctuations = async (constants: PhysicalConstants, 
 
     const prompt = `
 You are an expert quantum physicist AI operating within a custom universe. Your analysis must be rigorously scientific and based on established principles, adapted for the given constants.
-This universe is defined by the following physical constants (as multipliers of their real-world values):
+This universe is defined by the following physical constants (as multipliers of real-world values):
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 
 Based on these physics, analyze the nature of quantum vacuum fluctuations.
