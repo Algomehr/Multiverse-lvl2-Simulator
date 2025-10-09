@@ -104,5 +104,14 @@ export const fa = {
     stageControls: "مرحله چرخه حیات",
     temperature: "دما",
     duration: "مدت زمان",
+  },
+  quantumFluctuations: {
+    title: "شبیه‌ساز نوسانات کوانتومی",
+    promptText: "کف کوانتومی جهان اولیه را شبیه‌سازی کنید تا ببینید چگونه ذرات مجازی به وجود آمده و از بین می‌روند.",
+    buttonText: "شبیه‌سازی کف کوانتومی",
+    simulatingButtonText: "در حال شبیه‌سازی...",
+    loadingText: "مشاهده انرژی خلاء...",
+    errorTitle: "شبیه‌سازی کوانتومی ناموفق بود",
+    reportTitle: "تحلیل نوسانات کوانتومی",
   }
 };

@@ -14,6 +14,7 @@ import { GalaxyFormationSimulator } from './GalaxyFormationSimulator';
 import { ChemicalEvolutionSimulator } from './ChemicalEvolutionSimulator';
 import { DynamicTimelineSimulator } from './DynamicTimelineSimulator';
 import { StellarEvolutionSimulator3D } from './StellarEvolutionSimulator3D';
+import { QuantumFluctuationsSimulator } from './QuantumFluctuationsSimulator';
 import { useI18n } from '../i18n';
 
 interface ReportDisplayProps {
@@ -26,10 +27,12 @@ interface ReportDisplayProps {
 }
 
 const ChartCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="bg-slate-900/50 backdrop-blur-sm border border-slate-700 rounded-xl p-4 shadow-lg">
-    <h3 className="text-lg font-semibold mb-4 text-center text-indigo-300">{title}</h3>
-    {children}
-  </div>
+    <div className="p-[1px] bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg h-full">
+        <div className="bg-slate-900/70 backdrop-blur-sm rounded-[11px] p-4 h-full flex flex-col">
+          <h3 className="text-lg font-semibold mb-4 text-center text-indigo-300">{title}</h3>
+          <div className="flex-grow">{children}</div>
+        </div>
+    </div>
 );
 
 export const ReportDisplay: React.FC<ReportDisplayProps> = ({ report, chatHistory, onSendMessage, isStreaming, mode, constants }) => {
@@ -37,13 +40,15 @@ export const ReportDisplay: React.FC<ReportDisplayProps> = ({ report, chatHistor
   
   return (
     <div className="w-full max-w-7xl mx-auto p-4 md:p-6 space-y-8">
-      <div className="bg-slate-900/70 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 prose prose-invert prose-lg max-w-none prose-h1:text-4xl prose-h1:font-extrabold prose-h1:text-indigo-400 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:text-purple-400 prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-700 prose-h2:pb-2 prose-h3:text-xl prose-h3:font-semibold prose-h3:text-indigo-300 prose-h3:mt-8 prose-h3:mb-2 prose-strong:text-indigo-300 prose-a:text-indigo-400 hover:prose-a:text-indigo-300">
-        <ReactMarkdown
-          remarkPlugins={[remarkMath, remarkGfm]}
-          rehypePlugins={[rehypeKatex]}
-        >
-          {report.reportMarkdown}
-        </ReactMarkdown>
+      <div className="p-[1px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl">
+        <div className="bg-slate-900/80 backdrop-blur-sm rounded-[15px] p-6 md:p-8 prose prose-invert prose-lg max-w-none prose-h1:text-4xl prose-h1:font-extrabold prose-h1:text-indigo-400 prose-h1:mb-6 prose-h2:text-3xl prose-h2:font-bold prose-h2:text-purple-400 prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-slate-700 prose-h2:pb-2 prose-h3:text-xl prose-h3:font-semibold prose-h3:text-indigo-300 prose-h3:mt-8 prose-h3:mb-2 prose-strong:text-indigo-300 prose-a:text-indigo-400 hover:prose-a:text-indigo-300">
+          <ReactMarkdown
+            remarkPlugins={[remarkMath, remarkGfm]}
+            rehypePlugins={[rehypeKatex]}
+          >
+            {report.reportMarkdown}
+          </ReactMarkdown>
+        </div>
       </div>
 
       {mode === SimulationMode.Researcher && (
@@ -52,6 +57,7 @@ export const ReportDisplay: React.FC<ReportDisplayProps> = ({ report, chatHistor
             <GalaxyFormationSimulator constants={constants} />
             <ChemicalEvolutionSimulator constants={constants} />
             <DynamicTimelineSimulator constants={constants} />
+            <QuantumFluctuationsSimulator constants={constants} />
             <StellarEvolutionSimulator3D constants={constants} />
          </div>
       )}

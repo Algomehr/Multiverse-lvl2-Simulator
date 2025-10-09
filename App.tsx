@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ControlPanel } from './components/ControlPanel';
 import { LoadingAnimation } from './components/LoadingAnimation';
 import { ReportDisplay } from './components/ReportDisplay';
@@ -7,6 +7,8 @@ import { SimulationMode, PhysicalConstants, SimulationReport, ChatMessage } from
 import { INITIAL_CONSTANTS } from './constants';
 import { generateUniverseReport, streamChatResponse } from './services/geminiService';
 import { useI18n } from './i18n';
+import CosmicBackground from './components/CosmicBackground';
+import { ResetIcon } from './components/icons';
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<SimulationMode>(SimulationMode.Narrative);
@@ -16,6 +18,7 @@ const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const mainScrollRef = useRef<HTMLDivElement>(null);
 
   const { t, language } = useI18n();
 
@@ -75,14 +78,19 @@ const App: React.FC = () => {
     }
   }, [chatHistory, simulationReport, mode, constants, language]);
 
+  const handleCreateNew = () => {
+    setSimulationReport(null);
+    mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
 
   return (
-    <div className="min-h-screen w-full relative">
-        <div className="stars"></div>
-        <div className="twinkling"></div>
-        <main className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+    <>
+      <CosmicBackground />
+      <div ref={mainScrollRef} className="h-screen w-full relative overflow-y-auto">
+        <main className="relative z-10 flex flex-col items-center min-h-screen p-4 sm:p-6 lg:p-8">
             <LanguageSwitcher />
-            <header className="text-center mb-8">
+            <header className="text-center my-8 sm:my-12">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500">
                     {t('appTitle')}
                 </h1>
@@ -123,15 +131,17 @@ const App: React.FC = () => {
                     constants={constants}
                 />
                  <button 
-                    onClick={() => setSimulationReport(null)}
-                    className="mt-8 px-8 py-3 text-lg font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white rounded-lg shadow-lg transition transform hover:scale-105"
+                    onClick={handleCreateNew}
+                    className="mt-8 mb-12 flex items-center justify-center gap-3 px-8 py-3 text-lg font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white rounded-lg shadow-lg transition transform hover:scale-105"
                 >
+                    <ResetIcon className="w-5 h-5"/>
                     {t('createNewUniverse')}
                 </button>
               </>
             )}
         </main>
-    </div>
+      </div>
+    </>
   );
 };
 

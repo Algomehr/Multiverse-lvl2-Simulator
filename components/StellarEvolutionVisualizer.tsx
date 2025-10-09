@@ -5,6 +5,39 @@ interface StellarEvolutionVisualizerProps {
   data: StellarEvolutionData;
 }
 
+// Robust color parsing utility for hex codes
+const parseColor = (colorStr: string): { r: number; g: number; b: number } => {
+  const fallback = { r: 255, g: 255, b: 255 }; // Default to white
+  if (typeof colorStr !== 'string' || !colorStr.startsWith('#')) {
+    return fallback;
+  }
+
+  let hex = colorStr.slice(1);
+
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+
+  if (hex.length !== 6) {
+    return fallback;
+  }
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  if (isNaN(r) || isNaN(g) || isNaN(b)) {
+    return fallback;
+  }
+
+  return { r, g, b };
+};
+
+const toRgba = (colorStr: string, alpha: number): string => {
+    const { r, g, b } = parseColor(colorStr);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 export const StellarEvolutionVisualizer: React.FC<StellarEvolutionVisualizerProps> = ({ data }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -58,9 +91,9 @@ export const StellarEvolutionVisualizer: React.FC<StellarEvolutionVisualizerProp
             
             // Star glow
             const grad = ctx.createRadialGradient(x, y_pos, radius * 0.2, x, y_pos, radius);
-            grad.addColorStop(0, `${stage.color}ff`);
-            grad.addColorStop(0.4, `${stage.color}80`);
-            grad.addColorStop(1, `${stage.color}00`);
+            grad.addColorStop(0, toRgba(stage.color, 1.0));
+            grad.addColorStop(0.4, toRgba(stage.color, 0.5));
+            grad.addColorStop(1, toRgba(stage.color, 0.0));
 
             ctx.fillStyle = grad;
             ctx.fillRect(x - radius * 2, y_pos - radius * 2, radius * 4, radius * 4);

@@ -53,7 +53,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ constants, setConsta
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-slate-900/70 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl shadow-indigo-900/20">
+    <div className="w-full max-w-4xl mx-auto p-[1px] bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl shadow-indigo-900/50">
+        <div className="bg-slate-900/80 backdrop-blur-sm rounded-[15px] p-6">
       <div className="mb-6 flex flex-col sm:flex-row justify-center items-center gap-4">
         <button
           onClick={() => setMode(SimulationMode.Narrative)}
@@ -102,6 +103,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ constants, setConsta
                 {isLoading ? t('simulating') : t('createUniverse')}
             </button>
         </div>
+      </div>
       </div>
     </div>
   );

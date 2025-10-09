@@ -38,7 +38,8 @@ export const GalaxyFormationSimulator: React.FC<GalaxyFormationSimulatorProps> =
   };
 
   return (
-    <div className="bg-slate-900/70 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-6 md:p-8 flex flex-col h-full">
+    <div className="p-[1px] bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl shadow-2xl h-full">
+        <div className="bg-slate-900/80 backdrop-blur-sm rounded-[15px] p-6 md:p-8 h-full flex flex-col">
       <h2 className="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
         {t('galaxyFormation.title')}
       </h2>
@@ -83,6 +84,7 @@ export const GalaxyFormationSimulator: React.FC<GalaxyFormationSimulatorProps> =
             </div>
             </div>
         )}
+      </div>
       </div>
     </div>
   );

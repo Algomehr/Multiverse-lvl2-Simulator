@@ -104,5 +104,14 @@ export const en = {
     stageControls: "Lifecycle Stage",
     temperature: "Temperature",
     duration: "Duration",
+  },
+  quantumFluctuations: {
+    title: "Quantum Fluctuations Simulator",
+    promptText: "Simulate the quantum foam of the early universe to see how virtual particles pop in and out of existence.",
+    buttonText: "Simulate Quantum Foam",
+    simulatingButtonText: "Simulating...",
+    loadingText: "Observing vacuum energy...",
+    errorTitle: "Quantum Simulation Failed",
+    reportTitle: "Quantum Fluctuation Analysis",
   }
 };

@@ -5,31 +5,38 @@ import { useI18n } from '../i18n';
 // Robust color parsing utility
 const parseColor = (colorStr: string | undefined): { r: number; g: number; b: number } => {
   const fallback = { r: 255, g: 255, b: 255 }; // Default to white
-  if (typeof colorStr !== 'string' || !colorStr.startsWith('#')) {
-    return fallback;
+  if (typeof colorStr !== 'string') return fallback;
+
+  // Handle rgb(r,g,b) format
+  if (colorStr.startsWith('rgb')) {
+      const parts = colorStr.match(/(\d+)/g);
+      if (parts && parts.length === 3) {
+          return { r: parseInt(parts[0], 10), g: parseInt(parts[1], 10), b: parseInt(parts[2], 10) };
+      }
+      return fallback;
   }
 
-  let hex = colorStr.slice(1);
-
-  if (hex.length === 3) {
-    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  // Handle hex format
+  if (colorStr.startsWith('#')) {
+      let hex = colorStr.slice(1);
+      if (hex.length === 3) {
+          hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      }
+      if (hex.length !== 6) return fallback;
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      if (isNaN(r) || isNaN(g) || isNaN(b)) return fallback;
+      return { r, g, b };
   }
-
-  if (hex.length !== 6) {
-    return fallback;
-  }
-
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  if (isNaN(r) || isNaN(g) || isNaN(b)) {
-    return fallback;
-  }
-
-  return { r, g, b };
+  
+  return fallback;
 };
 
+const toRgba = (colorStr: string, alpha: number): string => {
+    const { r, g, b } = parseColor(colorStr);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 // Utility for linear interpolation
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -105,8 +112,8 @@ export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3D
       if (currentCoronaSize > 0) {
         const coronaRadius = starRadius + baseRadius * currentCoronaSize * 0.5;
         const coronaGrad = ctx.createRadialGradient(centerX, centerY, starRadius, centerX, centerY, coronaRadius);
-        coronaGrad.addColorStop(0, `${currentCoronaColor}80`);
-        coronaGrad.addColorStop(1, `${currentCoronaColor}00`);
+        coronaGrad.addColorStop(0, toRgba(currentCoronaColor, 0.5));
+        coronaGrad.addColorStop(1, toRgba(currentCoronaColor, 0));
         ctx.fillStyle = coronaGrad;
         ctx.fillRect(0, 0, width, height);
       }
@@ -115,8 +122,8 @@ export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3D
       const glowRadius = starRadius * (1 + currentEmissivity * 2);
       const glowGrad = ctx.createRadialGradient(centerX, centerY, starRadius * 0.5, centerX, centerY, glowRadius);
       glowGrad.addColorStop(0, `rgba(255, 255, 255, ${currentEmissivity * 0.8})`);
-      glowGrad.addColorStop(0.7, `${currentColor}80`);
-      glowGrad.addColorStop(1, `${currentColor}00`);
+      glowGrad.addColorStop(0.7, toRgba(currentColor, 0.5));
+      glowGrad.addColorStop(1, toRgba(currentColor, 0));
       ctx.fillStyle = glowGrad;
       ctx.fillRect(centerX - glowRadius, centerY - glowRadius, glowRadius * 2, glowRadius * 2);
 
@@ -146,10 +153,11 @@ export const StellarEvolutionVisualizer3D: React.FC<StellarEvolutionVisualizer3D
         const accretionDiskInnerRadius = baseRadius * 0.8;
 
         const diskGrad = ctx.createRadialGradient(centerX, centerY, accretionDiskInnerRadius, centerX, centerY, accretionDiskOuterRadius);
-        diskGrad.addColorStop(0, `${currentCoronaColor}00`);
-        diskGrad.addColorStop(0.2, `${currentCoronaColor}ff`);
-        diskGrad.addColorStop(0.8, `${lerpColor(currentCoronaColor, '#FFD700', 0.5)}80`);
-        diskGrad.addColorStop(1, `${lerpColor(currentCoronaColor, '#FFD700', 0.5)}00`);
+        const interpolatedDiskColor = lerpColor(currentCoronaColor, '#FFD700', 0.5);
+        diskGrad.addColorStop(0, toRgba(currentCoronaColor, 0));
+        diskGrad.addColorStop(0.2, toRgba(currentCoronaColor, 1));
+        diskGrad.addColorStop(0.8, toRgba(interpolatedDiskColor, 0.5));
+        diskGrad.addColorStop(1, toRgba(interpolatedDiskColor, 0));
 
         ctx.save();
         ctx.translate(centerX, centerY);

@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { SimulationMode, PhysicalConstants, ChatMessage, SimulationReport, StellarEvolutionData, GalaxyFormationData, ChemicalEvolutionData, DynamicTimelineData, StellarEvolutionData3D } from '../types';
+import { SimulationMode, PhysicalConstants, ChatMessage, SimulationReport, StellarEvolutionData, GalaxyFormationData, ChemicalEvolutionData, DynamicTimelineData, StellarEvolutionData3D, QuantumFluctuationsData } from '../types';
 
 if (!process.env.API_KEY) {
   throw new Error("API_KEY environment variable not set");
@@ -108,7 +108,7 @@ const researcherPrompt = (constants: PhysicalConstants, language: 'en' | 'fa') =
         : "**IMPORTANT: Your entire response (including `reportMarkdown` and subjects/names in `chartData`) must be in English.**";
 
     return `
-You are a Multiverse Simulator AI. You will simulate a universe based on a given set of physical constants, which are provided as multipliers of their real-world values. The user has selected 'Researcher' mode.
+You are a Multiverse Simulator AI. You will simulate a universe based on a given set of physical constants, which are provided as multipliers of their real-world values. The user has selected 'Researcher' mode. Your response must be scientifically rigorous and based on established physical principles, adapted for the given constants.
 ${langInstruction}
 Constants: ${JSON.stringify(getConstantValues(constants), null, 2)}
 
@@ -218,7 +218,7 @@ export const streamChatResponse = async (
         
     const persona = mode === SimulationMode.Narrative 
         ? "You are the Cosmic Consciousness of the simulated universe, speaking with wisdom and a touch of mystery."
-        : "You are a knowledgeable AI research assistant, providing precise and detailed answers based on the simulation data.";
+        : "You are a knowledgeable AI research assistant, providing precise, scientifically-grounded, and detailed answers based on the simulation data.";
 
     const systemInstruction = `
         ${persona}
@@ -279,7 +279,7 @@ export const simulateStellarEvolution = async (constants: PhysicalConstants, sta
         : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
 
     const prompt = `
-You are an expert astrophysicist AI operating within a custom universe.
+You are an expert astrophysicist AI operating within a custom universe. Your response must be scientifically plausible and based on the provided physics.
 This universe is defined by the following physical constants (as multipliers of real-world values):
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 
@@ -345,7 +345,7 @@ export const simulateGalaxyFormation = async (constants: PhysicalConstants, lang
         : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
 
     const prompt = `
-You are an expert cosmologist AI simulating galaxy formation in a custom universe.
+You are an expert cosmologist AI simulating galaxy formation in a custom universe. Your response must be scientifically grounded in principles of gravitational collapse and stellar dynamics, adapted for the given constants.
 This universe is defined by the following physical constants (as multipliers of real-world values):
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 
@@ -416,8 +416,8 @@ export const simulateChemicalEvolution = async (constants: PhysicalConstants, la
         : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
 
     const prompt = `
-You are an expert nuclear physicist and chemist AI operating within a custom universe.
-This universe is defined by the following physical constants (as multipliers of real-world values):
+You are an expert nuclear physicist and chemist AI operating within a custom universe. Your response must be scientifically rigorous.
+This universe is defined by the following physical constants (as multipliers of their real-world values):
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 
 Based on these physics, analyze the chemical evolution of this universe.
@@ -480,7 +480,7 @@ export const simulateDynamicTimeline = async (constants: PhysicalConstants, lang
         : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
 
     const prompt = `
-You are an expert cosmologist AI, simulating the entire history of a custom universe.
+You are an expert cosmologist AI, simulating the entire history of a custom universe. Your timeline must be scientifically consistent with the provided physics.
 This universe is defined by the following physical constants (as multipliers of real-world values):
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 
@@ -519,6 +519,59 @@ Based on these physics, generate a dynamic timeline of the universe's history.
     }
 };
 
+const quantumFluctuationsSchema = {
+    type: Type.OBJECT,
+    properties: {
+        report: { type: Type.STRING },
+        energyLevel: { type: Type.NUMBER },
+        fluctuationScale: { type: Type.NUMBER },
+    }
+};
+
+export const simulateQuantumFluctuations = async (constants: PhysicalConstants, language: 'en' | 'fa'): Promise<QuantumFluctuationsData> => {
+    const langInstruction = language === 'fa'
+        ? "**مهم: کل پاسخ شما (شامل تمام رشته‌های متنی) باید به زبان فارسی باشد.**"
+        : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
+
+    const prompt = `
+You are an expert quantum physicist AI operating within a custom universe. Your analysis must be rigorously scientific and based on established principles, adapted for the given constants.
+This universe is defined by the following physical constants (as multipliers of their real-world values):
+${JSON.stringify(getConstantValues(constants), null, 2)}
+
+Based on these physics, analyze the nature of quantum vacuum fluctuations.
+1.  **Write a scientifically rigorous report** explaining how these constants, especially the Planck Constant (h) and the Cosmological Constant (Λ), affect the vacuum energy and the creation/annihilation of virtual particle-antiparticle pairs. Use LaTeX for equations like the uncertainty principle (\`$$\\Delta E \\Delta t \\ge \\frac{\\hbar}{2}$$\`) and explain how its implications change. Discuss the scale and energy of these fluctuations.
+2.  **Provide parameters for a visualization:**
+    -   \`energyLevel\`: A value from 0.0 to 1.0 representing the baseline energy density of the vacuum. A high Cosmological Constant should lead to a higher value.
+    -   \`fluctuationScale\`: A value from 0.0 to 1.0 representing the typical size and energy of virtual particles. A lower Planck constant might lead to larger, more significant fluctuations (larger scale).
+- ${langInstruction}
+`;
+
+    const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+            responseMimeType: "application/json",
+            responseSchema: quantumFluctuationsSchema,
+        },
+    });
+
+    const jsonText = response.text.trim();
+    try {
+        const parsed = JSON.parse(jsonText) as QuantumFluctuationsData;
+        if (typeof parsed.energyLevel !== 'number' || typeof parsed.fluctuationScale !== 'number') {
+            throw new Error("The quantum fluctuations simulation returned invalid data for visualization parameters.");
+        }
+        // Clamp values to be safe
+        parsed.energyLevel = Math.max(0, Math.min(1, parsed.energyLevel));
+        parsed.fluctuationScale = Math.max(0, Math.min(1, parsed.fluctuationScale));
+        return parsed;
+    } catch (e) {
+        console.error("Failed to parse or validate quantum fluctuations response as JSON:", jsonText, e);
+        const message = e instanceof Error ? e.message : "The quantum fluctuations simulation returned an invalid format. Please try again.";
+        throw new Error(message);
+    }
+};
+
 
 const stellarEvolution3DSchema = {
     type: Type.OBJECT,
@@ -552,7 +605,7 @@ export const simulateStellarEvolution3D = async (constants: PhysicalConstants, s
         : "**IMPORTANT: Your entire response (including all text strings) must be in English.**";
 
     const prompt = `
-You are an expert astrophysicist AI creating a 3D visualization of stellar evolution in a custom universe.
+You are an expert astrophysicist AI creating a 3D visualization of stellar evolution in a custom universe. Your response must be scientifically plausible.
 This universe is defined by the following physical constants (as multipliers of real-world values):
 ${JSON.stringify(getConstantValues(constants), null, 2)}
 

@@ -100,6 +100,13 @@ export interface DynamicTimelineData {
   epochs: TimelineEpoch[];
 }
 
+// New types for the Quantum Fluctuations Simulator
+export interface QuantumFluctuationsData {
+  report: string;
+  energyLevel: number; // A value from 0 (low energy) to 1 (high energy)
+  fluctuationScale: number; // A value from 0 (small, calm fluctuations) to 1 (large, energetic fluctuations)
+}
+
 // New types for the 3D Stellar Evolution Simulator
 export interface StellarStage3D {
   name: string;

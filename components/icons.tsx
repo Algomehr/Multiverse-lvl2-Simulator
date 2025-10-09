@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 export const SparklesIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -16,5 +17,17 @@ export const BeakerIcon = ({ className = "w-6 h-6" }: { className?: string }) =>
 export const SendIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
         <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
+    </svg>
+);
+
+export const GlobeIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3.75h.008v.008H10.5v-.008zM10.5 21a8.956 8.956 0 01-5.25-2.073m5.25 2.073a8.956 8.956 0 005.25-2.073m0 0a8.956 8.956 0 012.073-5.25m-2.073 5.25a8.956 8.956 0 002.073-5.25m0 0a8.956 8.956 0 01-2.073-5.25m-2.073 5.25a8.956 8.956 0 00-2.073-5.25m0 0a8.956 8.956 0 01-5.25-2.073m5.25 2.073a8.956 8.956 0 00-5.25-2.073m0 0a8.956 8.956 0 01-2.073 5.25m2.073-5.25a8.956 8.956 0 00-2.073 5.25M3 10.5a8.956 8.956 0 012.073 5.25m2.073-5.25a8.956 8.956 0 002.073 5.25" />
+    </svg>
+);
+
+export const ResetIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0011.664 0l3.181-3.183m-11.664 0l3.181-3.183a8.25 8.25 0 00-11.664 0l3.181 3.183" />
     </svg>
 );
