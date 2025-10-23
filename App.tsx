@@ -139,6 +139,20 @@ const App: React.FC = () => {
                 </button>
               </>
             )}
+
+            <footer className="w-full text-center py-4 mt-auto">
+                <p className="text-sm text-slate-400">
+                    {t('developedBy')}{' '}
+                    <a 
+                        href="https://mehrdad.netlify.app/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+                    >
+                        Mehrdad Rajabi
+                    </a>
+                </p>
+            </footer>
         </main>
       </div>
     </>

@@ -113,5 +113,6 @@ export const en = {
     loadingText: "Observing vacuum energy...",
     errorTitle: "Quantum Simulation Failed",
     reportTitle: "Quantum Fluctuation Analysis",
-  }
+  },
+  developedBy: "Developed by"
 };

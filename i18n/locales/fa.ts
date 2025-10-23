@@ -113,5 +113,6 @@ export const fa = {
     loadingText: "مشاهده انرژی خلاء...",
     errorTitle: "شبیه‌سازی کوانتومی ناموفق بود",
     reportTitle: "تحلیل نوسانات کوانتومی",
-  }
+  },
+  developedBy: "توسعه یافته توسط"
 };
